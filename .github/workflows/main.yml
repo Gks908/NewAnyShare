@@ -25,8 +25,8 @@ jobs:
         shell: cmd
         run: |
           echo off
-          powershell -Command "$env:CHOCO_INSTALL_ANYDESK"
-          :$env:START_ANYDESK
+          $env:CHOCO_INSTALL_ANYDESK
+          :START_ANYDESK
           anydesk --start
           ping 127.0.0.1 -n 4 > nul
           
