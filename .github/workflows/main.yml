@@ -25,7 +25,7 @@ jobs:
         shell: cmd
         run: |
           echo off
-          $env:CHOCO_INSTALL_ANYDESK
+          choco install anydesk -y
           :START_ANYDESK
           anydesk --start
           ping 127.0.0.1 -n 4 > nul
