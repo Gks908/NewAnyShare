@@ -1,52 +1,20 @@
-name: Win Workflow Run
-
-on:
+name: macOS
+on: 
   workflow_dispatch:
+defaults:
+  run:
+    shell: bash
 
 jobs:
   build:
-    runs-on: windows-2022
-    
-
-
+    runs-on: macos-12
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      
-
-      - name: Run Script
-        env:
-          CHOCO_INSTALL_ANYDESK: ${{ secrets.CHOCO_INSTALL_ANYDESK }}
-          START_ANYDESK: ${{ secrets.START_ANYDESK }}
-          PASS_ANYDESK: ${{ secrets.PASS_ANYDESK }}
-          LOCATION_ANYDESK: ${{ secrets.LOCATION_ANYDESK }}
-          
-        shell: cmd
-        run: |
-          echo off
-          choco install anydesk -y
-          :START_ANYDESK
-          anydesk --start
-          ping 127.0.0.1 -n 4 > nul
-          
-          for /f "delims=" %%i in ('"$env:LOCATION_ANYDESK" --get-id') do (
-              set ID=%%i
-          )
-          
-          if "%ID%"=="" (
-              taskkill /f /im anydesk.exe > nul
-              goto $env:START_ANYDESK
-          )
-          
-          if "%ID%"=="0" (
-              taskkill /f /im anydesk.exe > nul
-              goto $env:START_ANYDESK
-          )
-          echo $env:PASS_ANYDESK | anydesk --set-password
-          echo AnyDesk ID is: %ID%
-
-      
-        
-      - name: Time
-        run: sleep 21000
+    - uses: actions/checkout@v3
+    - name: Setting the Environment Up.
+      env:
+        MAC_USER_PASSWORD: ${{ secrets.MAC_USER_PASSWORD }}
+      run: source setup.sh "$MAC_USER_PASSWORD"
+    - name: ngrok is now listening...
+      run: curl --silent http://127.0.0.1:4040/api/tunnels | jq '.tunnels[0].public_url'
+    - name: Setup Session
+      uses: mxschmitt/action-tmate@v3
